@@ -242,13 +242,20 @@ div.stButton > button:hover {
     color: white;
     border: 1px solid #1E3A8A;
 }
+
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    border-radius: 24px;
+    border: 1px solid #D7DEE8;
+    background-color: #FFFFFF;
+    padding: 20px;
+    box-shadow: 0 8px 24px rgba(13, 27, 61, 0.06);
+}
 </style>
 """, unsafe_allow_html=True)
 
 
-# -----------------------------
+
 # 상단바 함수
-# -----------------------------
 def render_navbar():
     st.markdown("""
     <div class="navbar">
@@ -306,25 +313,33 @@ def render_main_page():
         """, unsafe_allow_html=True)
 
     with col2:
+    with st.container(border=True):
         st.markdown("""
-        <div class="action-card">
+        <div style="text-align:center; padding: 12px 8px;">
             <div class="action-title">매칭 시작하기</div>
-            <div class="action-desc">나에게 맞는 멘토/멘티를 찾기 위한 매칭 테스트를 시작해보세요.</div>
+            <div class="action-desc">
+                나에게 맞는 멘토/멘티를 찾기 위한<br>
+                매칭 테스트를 시작해보세요.
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
-        if st.button("매칭 시작하기", key="main_matching_btn"):
+        if st.button("매칭 시작하기", key="main_matching_btn", use_container_width=True):
             go_matching()
 
-    with col3:
+with col3:
+    with st.container(border=True):
         st.markdown("""
-        <div class="action-card">
+        <div style="text-align:center; padding: 12px 8px;">
             <div class="action-title">서비스 설명보기</div>
-            <div class="action-desc">이어질 숙명이 어떤 서비스인지 자세히 알아보세요.</div>
+            <div class="action-desc">
+                이어질 숙명이 어떤 서비스인지<br>
+                자세히 알아보세요.
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
-        if st.button("서비스 설명보기", key="main_service_btn"):
+        if st.button("서비스 설명보기", key="main_service_btn", use_container_width=True):
             go_service()
 
     # 푸터
