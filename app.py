@@ -1,170 +1,204 @@
 import streamlit as st
 
+# =============================
+# 페이지 기본 설정
+# =============================
 st.set_page_config(
     page_title="이어질 숙명",
     page_icon="🔗",
     layout="wide"
 )
 
-# 페이지 이동 상태 관리
+# =============================
+# 페이지 상태 관리
+# =============================
 if "page" not in st.session_state:
     st.session_state.page = "main"
 
-def go_main():
-    st.session_state.page = "main"
 
-def go_service():
-    st.session_state.page = "service"
-
-def go_matching():
-    st.session_state.page = "matching"
+def set_page(page_name):
+    st.session_state.page = page_name
 
 
-
-# CSS 디자인
+# =============================
+# CSS
+# =============================
 st.markdown("""
 <style>
+/* 전체 배경 */
 .stApp {
-    background-color: #F7F9FC;
+    background-color: #F6F9FC;
 }
 
+/* 전체 너비 */
 .block-container {
-    max-width: 1100px;
+    max-width: 1180px;
     padding-top: 2rem;
     padding-bottom: 2rem;
 }
 
-/* 공통 카드 */
-.box {
-    background-color: white;
-    border: 1px solid #D7DEE8;
-    border-radius: 14px;
-    padding: 26px;
-    box-shadow: 0 8px 24px rgba(13, 27, 61, 0.06);
+/* 기본 텍스트 */
+body {
+    color: #111827;
 }
 
 /* 상단바 */
 .navbar {
-    background-color: white;
+    background-color: #FFFFFF;
     border: 1px solid #D7DEE8;
-    border-radius: 14px;
+    border-radius: 16px;
     padding: 16px 22px;
     margin-bottom: 24px;
     display: flex;
-    align-items: center;
     justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 6px 20px rgba(15, 31, 58, 0.05);
 }
 
 .logo-area {
     display: flex;
     align-items: center;
     gap: 12px;
-    font-weight: 900;
-    font-size: 20px;
-    color: #0B1F3A;
 }
 
 .logo-icon {
-    width: 42px;
-    height: 42px;
-    border-radius: 10px;
-    background: linear-gradient(135deg, #0B1F3A, #2F6FED);
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #0B1F3A, #2563EB);
     color: white;
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     font-size: 22px;
+    font-weight: 900;
 }
 
-/* 히어로 */
-.hero {
-    background-color: white;
+.logo-text {
+    font-size: 20px;
+    font-weight: 900;
+    color: #0B1F3A;
+}
+
+.nav-menu {
+    color: #374151;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+/* 공통 박스 */
+.box {
+    background-color: #FFFFFF;
     border: 1px solid #D7DEE8;
-    border-radius: 14px;
-    padding: 34px;
-    margin-bottom: 24px;
+    border-radius: 18px;
+    padding: 30px;
+    box-shadow: 0 10px 26px rgba(15, 31, 58, 0.06);
+}
+
+/* 메인 히어로 */
+.hero {
+    background-color: #FFFFFF;
+    border: 1px solid #D7DEE8;
+    border-radius: 18px;
+    padding: 42px;
+    min-height: 250px;
+    box-shadow: 0 10px 26px rgba(15, 31, 58, 0.06);
 }
 
 .hero-title {
-    font-size: 34px;
+    font-size: 36px;
     font-weight: 900;
     line-height: 1.45;
     color: #111827;
+    margin-bottom: 18px;
 }
 
 .hero-desc {
-    margin-top: 14px;
-    color: #52616B;
     font-size: 16px;
-    line-height: 1.7;
+    line-height: 1.8;
+    color: #52616B;
 }
 
 .image-circle {
-    width: 180px;
-    height: 180px;
+    width: 190px;
+    height: 190px;
     border-radius: 999px;
     border: 2px solid #D7DEE8;
     background: linear-gradient(135deg, #EEF5FF, #FFFFFF);
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     color: #64748B;
-    font-weight: 700;
-    margin-left: auto;
+    font-weight: 800;
+    margin: 0 auto;
 }
 
 /* 공지 */
-.notice {
-    background-color: white;
+.notice-box {
+    background-color: #FFFFFF;
     border: 1px solid #D7DEE8;
-    border-radius: 14px;
-    padding: 22px;
-    min-height: 150px;
+    border-radius: 18px;
+    padding: 24px;
+    min-height: 210px;
+    box-shadow: 0 10px 26px rgba(15, 31, 58, 0.06);
 }
 
 .notice-title {
-    font-weight: 800;
+    font-size: 18px;
+    font-weight: 900;
     color: #111827;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
-/* 작은 기능 버튼 카드 */
-.action-card {
-    background-color: white;
+.notice-text {
+    font-size: 15px;
+    color: #374151;
+    line-height: 1.8;
+}
+
+/* Streamlit container 박스 */
+div[data-testid="stVerticalBlockBorderWrapper"] {
+    border-radius: 18px;
     border: 1px solid #D7DEE8;
-    border-radius: 14px;
-    padding: 24px;
+    background-color: #FFFFFF;
+    box-shadow: 0 10px 26px rgba(15, 31, 58, 0.06);
+}
+
+/* 액션 카드 내부 */
+.action-inner {
     text-align: center;
+    padding: 26px 10px 18px 10px;
     min-height: 150px;
 }
 
 .action-title {
-    font-size: 20px;
-    font-weight: 850;
+    font-size: 25px;
+    font-weight: 900;
     color: #111827;
-    margin-bottom: 8px;
+    margin-bottom: 16px;
 }
 
 .action-desc {
+    font-size: 16px;
     color: #52616B;
-    font-size: 15px;
-    line-height: 1.6;
+    line-height: 1.7;
 }
 
-/* 서비스 설명 페이지 */
+/* 페이지 제목 */
 .page-title {
-    font-size: 36px;
+    font-size: 42px;
     font-weight: 900;
-    text-align: center;
     color: #111827;
-    margin-bottom: 26px;
+    text-align: center;
+    margin-bottom: 28px;
 }
 
+/* 섹션 */
 .section-title {
-    font-size: 26px;
+    font-size: 28px;
     font-weight: 900;
     color: #111827;
-    margin-bottom: 14px;
+    margin-bottom: 16px;
 }
 
 .section-text {
@@ -173,68 +207,82 @@ st.markdown("""
     color: #374151;
 }
 
+/* 기능 카드 */
 .feature-card {
-    background-color: white;
+    background-color: #FFFFFF;
     border: 1px solid #D7DEE8;
-    border-radius: 14px;
-    padding: 24px;
-    min-height: 150px;
+    border-radius: 18px;
+    padding: 28px;
+    min-height: 170px;
+    box-shadow: 0 10px 26px rgba(15, 31, 58, 0.06);
 }
 
 .feature-title {
     font-size: 24px;
     font-weight: 900;
     color: #111827;
-    margin-bottom: 12px;
+    margin-bottom: 14px;
 }
 
 .feature-desc {
-    color: #52616B;
     font-size: 15px;
-    line-height: 1.6;
+    color: #52616B;
+    line-height: 1.7;
 }
 
+/* 이용 방법 */
 .guide-box {
-    background-color: white;
+    background-color: #FFFFFF;
     border: 1px solid #D7DEE8;
-    border-radius: 14px;
-    padding: 24px;
-    margin-top: 18px;
-    width: 100%;
+    border-radius: 18px;
+    padding: 28px;
+    box-shadow: 0 10px 26px rgba(15, 31, 58, 0.06);
 }
 
-.cta-box {
-    background-color: #ECFDF3;
-    border: 1px solid #86EFAC;
-    color: #14532D;
-    border-radius: 999px;
-    padding: 14px 28px;
-    text-align: center;
-    font-weight: 800;
-    margin-top: 14px;
+.guide-title {
+    font-size: 20px;
+    font-weight: 900;
+    color: #111827;
+    margin-bottom: 12px;
+}
+
+.guide-text {
+    font-size: 16px;
+    line-height: 1.9;
+    color: #374151;
+}
+
+/* 매칭 페이지 */
+.temp-box {
+    background-color: #FFFFFF;
+    border: 1px solid #D7DEE8;
+    border-radius: 18px;
+    padding: 30px;
+    margin-bottom: 24px;
+    box-shadow: 0 10px 26px rgba(15, 31, 58, 0.06);
 }
 
 /* 푸터 */
 .footer {
-    background-color: white;
+    background-color: #FFFFFF;
     border: 1px solid #D7DEE8;
-    border-radius: 14px;
-    padding: 20px;
+    border-radius: 18px;
+    padding: 22px;
     text-align: center;
     color: #6B7280;
     font-size: 13px;
-    margin-top: 28px;
+    margin-top: 30px;
 }
 
-/* Streamlit 버튼 */
+/* 버튼 */
 div.stButton > button {
-    border-radius: 999px;
-    border: 1px solid #0B1F3A;
     background-color: #0B1F3A;
     color: white;
+    border: 1px solid #0B1F3A;
+    border-radius: 999px;
+    padding: 0.75rem 1.2rem;
     font-weight: 800;
-    padding: 0.7rem 1.2rem;
-    width: 100%;
+    font-size: 16px;
 }
 
 div.stButton > button:hover {
@@ -243,40 +291,49 @@ div.stButton > button:hover {
     border: 1px solid #1E3A8A;
 }
 
-div[data-testid="stVerticalBlockBorderWrapper"] {
-    border-radius: 24px;
-    border: 1px solid #D7DEE8;
-    background-color: #FFFFFF;
-    padding: 20px;
-    box-shadow: 0 8px 24px rgba(13, 27, 61, 0.06);
+/* 모바일 여백 약간 보정 */
+@media screen and (max-width: 768px) {
+    .hero-title {
+        font-size: 28px;
+    }
+
+    .page-title {
+        font-size: 32px;
+    }
+
+    .nav-menu {
+        font-size: 12px;
+    }
 }
 </style>
 """, unsafe_allow_html=True)
 
 
-
-# 상단바 함수
+# =============================
+# 공통 상단바
+# =============================
 def render_navbar():
     st.markdown("""
     <div class="navbar">
         <div class="logo-area">
             <div class="logo-icon">✦</div>
-            <div>이어질 숙명</div>
+            <div class="logo-text">이어질 숙명</div>
         </div>
-        <div style="color:#64748B; font-size:14px;">
-            로그인 · 매칭 · 채팅 · 알림 · 공지사항
+        <div class="nav-menu">
+            로그인 &nbsp;&nbsp; 매칭 &nbsp;&nbsp; 채팅 &nbsp;&nbsp; 알림 &nbsp;&nbsp; 공지사항 &nbsp;&nbsp; 👤
         </div>
     </div>
     """, unsafe_allow_html=True)
 
 
-
+# =============================
 # 메인페이지
+# =============================
 def render_main_page():
     render_navbar()
 
     # 히어로 영역
-    col1, col2 = st.columns([2, 1])
+    col1, col2 = st.columns([2.2, 1])
 
     with col1:
         st.markdown("""
@@ -299,48 +356,61 @@ def render_main_page():
         </div>
         """, unsafe_allow_html=True)
 
-    # 공지 + 버튼 카드
-    col1, col2, col3 = st.columns([1.2, 1, 1])
+    st.write("")
+
+    # 공지 + 매칭 + 서비스 설명
+    col1, col2, col3 = st.columns([1.1, 1, 1])
 
     with col1:
         st.markdown("""
-        <div class="notice">
+        <div class="notice-box">
             <div class="notice-title">공지사항 &gt;</div>
-            <div>📢 이벤트 결과 발표</div>
-            <br>
-            <div style="color:#6B7280;">...</div>
+            <div class="notice-text">
+                📢 이벤트 결과 발표<br><br>
+                ...
+            </div>
         </div>
         """, unsafe_allow_html=True)
 
     with col2:
-    with st.container(border=True):
-        st.markdown("""
-        <div style="text-align:center; padding: 12px 8px;">
-            <div class="action-title">매칭 시작하기</div>
-            <div class="action-desc">
-                나에게 맞는 멘토/멘티를 찾기 위한<br>
-                매칭 테스트를 시작해보세요.
+        with st.container(border=True):
+            st.markdown("""
+            <div class="action-inner">
+                <div class="action-title">매칭 시작하기</div>
+                <div class="action-desc">
+                    나에게 맞는 멘토/멘티를 찾기 위한<br>
+                    매칭 테스트를 시작해보세요.
+                </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
 
-        if st.button("매칭 시작하기", key="main_matching_btn", use_container_width=True):
-            go_matching()
+            st.button(
+                "매칭 시작하기",
+                key="main_matching_btn",
+                use_container_width=True,
+                on_click=set_page,
+                args=("matching",)
+            )
 
-with col3:
-    with st.container(border=True):
-        st.markdown("""
-        <div style="text-align:center; padding: 12px 8px;">
-            <div class="action-title">서비스 설명보기</div>
-            <div class="action-desc">
-                이어질 숙명이 어떤 서비스인지<br>
-                자세히 알아보세요.
+    with col3:
+        with st.container(border=True):
+            st.markdown("""
+            <div class="action-inner">
+                <div class="action-title">서비스 설명보기</div>
+                <div class="action-desc">
+                    이어질 숙명이 어떤 서비스인지<br>
+                    자세히 알아보세요.
+                </div>
             </div>
-        </div>
-        """, unsafe_allow_html=True)
+            """, unsafe_allow_html=True)
 
-        if st.button("서비스 설명보기", key="main_service_btn", use_container_width=True):
-            go_service()
+            st.button(
+                "서비스 설명보기",
+                key="main_service_btn",
+                use_container_width=True,
+                on_click=set_page,
+                args=("service",)
+            )
 
     # 푸터
     st.markdown("""
@@ -350,13 +420,15 @@ with col3:
     """, unsafe_allow_html=True)
 
 
+# =============================
 # 서비스 설명 페이지
+# =============================
 def render_service_page():
     render_navbar()
 
     st.markdown('<div class="page-title">서비스 설명</div>', unsafe_allow_html=True)
 
-    # 소개 박스
+    # 서비스 소개
     st.markdown("""
     <div class="box">
         <div class="section-title">이어질 숙명은 어떤 서비스인가요?</div>
@@ -369,8 +441,13 @@ def render_service_page():
 
     st.write("")
 
-    if st.button("매칭 테스트 시작하기", key="service_matching_top"):
-        go_matching()
+    st.button(
+        "매칭 테스트 시작하기",
+        key="service_matching_top",
+        use_container_width=True,
+        on_click=set_page,
+        args=("matching",)
+    )
 
     st.write("")
 
@@ -388,7 +465,7 @@ def render_service_page():
 
     st.write("")
 
-    # 핵심 기능 소개
+    # 핵심 기능
     st.markdown("### [핵심 기능 소개]")
 
     col1, col2, col3 = st.columns(3)
@@ -425,43 +502,62 @@ def render_service_page():
 
     st.write("")
 
-    # 이용 방법 안내
+    # 이용 방법
     st.markdown("### [이용방법 안내]")
 
     st.markdown("""
     <div class="guide-box">
-        <b>이용 방법</b><br><br>
-        1. 학교 이메일로 로그인/가입<br>
-        2. 매칭 테스트 응답<br>
-        3. 추천 멘토/멘티 카드 확인<br>
-        4. 매칭 요청 후 수락되면 채팅 시작
+        <div class="guide-title">이용 방법</div>
+        <div class="guide-text">
+            1. 학교 이메일로 로그인/가입<br>
+            2. 매칭 테스트 응답<br>
+            3. 추천 멘토/멘티 카드 확인<br>
+            4. 매칭 요청 후 수락되면 채팅 시작
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
     st.write("")
 
     st.markdown("""
-    <div style="font-weight:800; color:#111827; margin-top:20px;">
+    <div class="section-text" style="font-weight:900; color:#111827;">
         나에게 맞는 연결을 찾아볼까요?
     </div>
     """, unsafe_allow_html=True)
 
-    if st.button("매칭 테스트 시작하기", key="service_matching_bottom"):
-        go_matching()
+    st.write("")
 
-    if st.button("메인페이지로 돌아가기", key="back_main"):
-        go_main()
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.button(
+            "매칭 테스트 시작하기",
+            key="service_matching_bottom",
+            use_container_width=True,
+            on_click=set_page,
+            args=("matching",)
+        )
+
+    with col2:
+        st.button(
+            "메인페이지로 돌아가기",
+            key="service_back_main",
+            use_container_width=True,
+            on_click=set_page,
+            args=("main",)
+        )
 
 
-
-# 임시 매칭 페이지
+# =============================
+# 임시 매칭 테스트 페이지
+# =============================
 def render_matching_page():
     render_navbar()
 
     st.markdown('<div class="page-title">매칭 테스트</div>', unsafe_allow_html=True)
 
     st.markdown("""
-    <div class="box">
+    <div class="temp-box">
         <div class="section-title">나에게 맞는 연결을 찾아보세요</div>
         <div class="section-text">
             이 페이지는 이후 매칭 테스트 질문 화면으로 연결될 예정입니다.
@@ -469,8 +565,6 @@ def render_matching_page():
         </div>
     </div>
     """, unsafe_allow_html=True)
-
-    st.write("")
 
     interest = st.multiselect(
         "관심 분야를 선택해주세요.",
@@ -482,15 +576,29 @@ def render_matching_page():
         ["선택해주세요", "전공 공부", "진로", "수강신청", "학교생활", "대외활동"]
     )
 
-    if st.button("결과 보기"):
+    style = st.radio(
+        "어떤 스타일의 멘토/멘티를 선호하나요?",
+        ["친절한 설명형", "현실 조언형", "경험 공유형", "함께 성장형"]
+    )
+
+    if st.button("결과 보기", use_container_width=True):
         st.success("당신은 성장형 연결송이입니다!")
         st.write("추천 카드 페이지로 연결될 예정입니다.")
 
-    if st.button("메인페이지로 돌아가기", key="matching_back_main"):
-        go_main()
+    st.write("")
+
+    st.button(
+        "메인페이지로 돌아가기",
+        key="matching_back_main",
+        use_container_width=True,
+        on_click=set_page,
+        args=("main",)
+    )
 
 
-# 페이지 렌더링
+# =============================
+# 페이지 실행
+# =============================
 if st.session_state.page == "main":
     render_main_page()
 
