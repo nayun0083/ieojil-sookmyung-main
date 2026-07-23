@@ -6,33 +6,108 @@ st.set_page_config(
     layout="wide"
 )
 
-# 페이지 상태 관리
+# -------------------------
+# 상태 초기화
+# -------------------------
 if "page" not in st.session_state:
     st.session_state.page = "main"
 
+if "q_index" not in st.session_state:
+    st.session_state.q_index = 0
 
-def move_page(page_name):
-    st.session_state.page = page_name
+if "answers" not in st.session_state:
+    st.session_state.answers = {}
+
+if "selected_mentor" not in st.session_state:
+    st.session_state.selected_mentor = "김민지 멘티"
+
+if "messages" not in st.session_state:
+    st.session_state.messages = [
+        {"role": "system", "text": "🎉 매칭에 성공했어요!"},
+        {"role": "mentor", "text": "안녕하세요! 만나서 반가워요 😊"}
+    ]
 
 
-# 공통 상단바
-def render_header():
+def move_page(page):
+    st.session_state.page = page
+
+
+# -------------------------
+# 최소 CSS
+# -------------------------
+st.markdown("""
+<style>
+.stApp {
+    background-color: #0E1117;
+    color: white;
+}
+
+.block-container {
+    padding-top: 2rem;
+    max-width: 1200px;
+}
+
+.card {
+    border: 1px solid #30363D;
+    border-radius: 12px;
+    padding: 20px;
+    background-color: #111827;
+    min-height: 150px;
+}
+
+.small-text {
+    color: #A0A7B4;
+    font-size: 14px;
+}
+
+.chat-box {
+    background-color: #161B22;
+    border-radius: 12px;
+    padding: 18px;
+    margin-bottom: 14px;
+}
+
+.notice {
+    color: #A0A7B4;
+    font-size: 14px;
+}
+
+.result-box {
+    background-color: #123524;
+    color: #6EE7A8;
+    padding: 18px;
+    border-radius: 10px;
+    margin: 20px 0;
+}
+
+button {
+    border-radius: 10px !important;
+}
+</style>
+""", unsafe_allow_html=True)
+
+
+# -------------------------
+# 공통 헤더
+# -------------------------
+def header():
     col1, col2 = st.columns([1, 3])
 
     with col1:
         st.subheader("🔗 이어질 숙명")
 
     with col2:
-        st.write("로그인   |   매칭   |   채팅   |   알림   |   공지사항   |   👤")
+        st.write("로그인 | 매칭 | 채팅 | 알림 | 공지사항 | 👤")
 
     st.divider()
 
 
+# -------------------------
 # 메인페이지
-def render_main_page():
-    render_header()
+# -------------------------
+def main_page():
+    header()
 
-    # 히어로 영역
     col1, col2 = st.columns([2, 1])
 
     with col1:
@@ -44,11 +119,11 @@ def render_main_page():
         )
 
     with col2:
-        st.info("관련 이미지 영역")
+        with st.container(border=True):
+            st.write("관련 이미지 영역")
 
     st.divider()
 
-    # 공지 + 버튼 카드
     col1, col2, col3 = st.columns(3)
 
     with col1:
@@ -61,26 +136,27 @@ def render_main_page():
         with st.container(border=True):
             st.subheader("매칭 시작하기")
             st.write("나에게 맞는 멘토/멘티를 찾기 위한 매칭 테스트를 시작해보세요.")
-
             if st.button("매칭 시작하기", use_container_width=True):
+                st.session_state.q_index = 0
+                st.session_state.answers = {}
                 move_page("matching")
 
     with col3:
         with st.container(border=True):
             st.subheader("서비스 설명보기")
             st.write("이어질 숙명이 어떤 서비스인지 자세히 알아보세요.")
-
             if st.button("서비스 설명보기", use_container_width=True):
                 move_page("service")
 
     st.divider()
-
     st.caption("문의: campuslink@email.com  © 2026 이어질 숙명. All rights reserved.")
 
 
+# -------------------------
 # 서비스 설명 페이지
-def render_service_page():
-    render_header()
+# -------------------------
+def service_page():
+    header()
 
     st.title("서비스 설명")
 
@@ -91,9 +167,6 @@ def render_service_page():
             "멘토와 멘티를 연결하는 매칭 서비스입니다."
         )
 
-        if st.button("매칭 테스트 시작하기", key="service_top_matching"):
-            move_page("matching")
-
     st.write("")
 
     with st.container(border=True):
@@ -103,7 +176,6 @@ def render_service_page():
         st.write("③ 누구에게 물어봐야 할지 모르는 어려움")
 
     st.write("")
-
     st.subheader("[핵심 기능 소개]")
 
     col1, col2, col3 = st.columns(3)
@@ -124,7 +196,6 @@ def render_service_page():
             st.write("매칭 후 대화가 가능합니다.")
 
     st.write("")
-
     st.subheader("[이용방법 안내]")
 
     with st.container(border=True):
@@ -135,12 +206,12 @@ def render_service_page():
 
     st.write("")
 
-    st.write("나에게 맞는 연결을 찾아볼까요?")
-
     col1, col2 = st.columns(2)
 
     with col1:
-        if st.button("매칭 테스트 시작하기", key="service_bottom_matching", use_container_width=True):
+        if st.button("매칭 테스트 시작하기", use_container_width=True):
+            st.session_state.q_index = 0
+            st.session_state.answers = {}
             move_page("matching")
 
     with col2:
@@ -148,45 +219,231 @@ def render_service_page():
             move_page("main")
 
 
-# 임시 매칭 테스트 페이지
-def render_matching_page():
-    render_header()
+# -------------------------
+# 매칭 테스트
+# -------------------------
+questions = [
+    {
+        "title": "Q1",
+        "question": "어떤 도움을 받고 싶나요?",
+        "type": "radio",
+        "options": ["학교생활", "전공", "취업", "대외활동"]
+    },
+    {
+        "title": "Q1-1",
+        "question": "현재 가장 고민되는 것은?",
+        "type": "text"
+    },
+    {
+        "title": "Q2",
+        "question": "관심 분야는?",
+        "type": "radio",
+        "options": ["AI", "웹개발", "앱개발", "디자인"]
+    },
+    {
+        "title": "Q3",
+        "question": "어떤 선배를 만나고 싶나요?",
+        "type": "radio",
+        "options": ["친절한", "친구 같은", "경험 많은", "꼼꼼한"]
+    },
+    {
+        "title": "Q4",
+        "question": "나의 성향은?",
+        "type": "radio",
+        "options": ["도전형", "계획형", "신중형", "사교형"]
+    },
+    {
+        "title": "Q5",
+        "question": "멘토링 가능한 시간은?",
+        "type": "radio",
+        "options": ["평일", "주말", "저녁", "상관없음"]
+    }
+]
 
-    st.title("매칭 테스트")
 
-    st.write("나에게 맞는 멘토/멘티를 찾기 위한 질문에 답해주세요.")
+def matching_page():
+    q = questions[st.session_state.q_index]
 
-    interest = st.multiselect(
-        "관심 분야를 선택해주세요.",
-        ["전공 공부", "진로 탐색", "취업 준비", "공모전", "대외활동", "학교생활"]
-    )
+    st.title(q["title"])
+    st.subheader(q["question"])
 
-    concern = st.selectbox(
-        "현재 가장 고민되는 부분은 무엇인가요?",
-        ["선택해주세요", "전공 공부", "진로", "수강신청", "학교생활", "대외활동"]
-    )
-
-    style = st.radio(
-        "어떤 스타일의 멘토/멘티를 선호하나요?",
-        ["친절한 설명형", "현실 조언형", "경험 공유형", "함께 성장형"]
-    )
-
-    if st.button("결과 보기"):
-        st.success("당신은 성장형 연결송이입니다!")
-        st.write("추천 카드 페이지로 연결될 예정입니다.")
+    if q["type"] == "radio":
+        answer = st.radio(
+            "선택해주세요.",
+            q["options"],
+            key=f"q_{st.session_state.q_index}",
+            label_visibility="collapsed"
+        )
+    else:
+        answer = st.text_area(
+            "답변을 입력해주세요.",
+            key=f"q_{st.session_state.q_index}",
+            label_visibility="collapsed"
+        )
 
     st.write("")
 
-    if st.button("메인페이지로 돌아가기"):
-        move_page("main")
+    if st.session_state.q_index < len(questions) - 1:
+        if st.button("다음"):
+            st.session_state.answers[q["title"]] = answer
+            st.session_state.q_index += 1
+            st.rerun()
+    else:
+        if st.button("결과 보기"):
+            st.session_state.answers[q["title"]] = answer
+            move_page("result")
+            st.rerun()
 
 
+# -------------------------
+# 매칭 결과
+# -------------------------
+def result_page():
+    st.title("🎉 매칭 결과")
+    st.header("당신은 열정송이입니다!")
+
+    st.write("목표가 생기면 끝까지 도전하는 열정적인 유형입니다.")
+
+    st.divider()
+
+    st.header("🌱 나와 잘 맞는 선배를 찾았습니다!")
+
+    with st.container(border=True):
+        st.markdown(
+            """
+            <div class="result-box">
+                김송이 선배에게 매칭 신청하시겠습니까?
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        st.write("**학과:** 컴퓨터과학과")
+        st.write("**학번:** 20학번")
+        st.write("**관심 분야:** AI · 웹개발 · 프로젝트")
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+            if st.button("프로필 보기", use_container_width=True):
+                st.info("프로필 상세 페이지는 이후 구현 예정입니다.")
+
+        with col2:
+            if st.button("매칭 신청하기", use_container_width=True):
+                st.success("매칭 신청이 완료되었습니다!")
+                st.session_state.selected_mentor = "김송이 선배"
+
+    st.write("")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        if st.button("채팅으로 이동", use_container_width=True):
+            move_page("chat")
+
+    with col2:
+        if st.button("메인페이지로 이동", use_container_width=True):
+            move_page("main")
+
+
+# -------------------------
+# 채팅 페이지
+# -------------------------
+def chat_page():
+    st.title("이어질 숙명")
+
+    col1, col2, col3 = st.columns([1.2, 1.2, 2])
+
+    # 왼쪽: 채팅 목록
+    with col1:
+        st.header("💬 나의 채팅 목록")
+
+        mentors = [
+            {"name": "김민지 멘티", "last": "😊 친해져요!"},
+            {"name": "박지훈 멘토", "last": "학교생활이 궁금하면 편하게 물어보세요!"},
+            {"name": "이서연 멘티", "last": "📚 같이 공부해요!"}
+        ]
+
+        for mentor in mentors:
+            if st.button(f"👩 {mentor['name']}", key=mentor["name"], use_container_width=True):
+                st.session_state.selected_mentor = mentor["name"]
+
+            st.caption(mentor["last"])
+            st.divider()
+
+        if st.button("➕ 새로운 매칭 시작하기", use_container_width=True):
+            st.session_state.q_index = 0
+            st.session_state.answers = {}
+            move_page("matching")
+
+    # 가운데: 추천 주제
+    with col2:
+        st.header("💡 이런 주제는 어때요?")
+
+        topics = [
+            "학교에서 가장 좋아하는 수업은 무엇인가요?",
+            "MT와 축제 중 하나만 간다면 무엇을 선택하시겠어요?",
+            "방학 때 가장 하고 싶은 것은 무엇인가요?",
+            "과제 VS 시험! 하나만 선택한다면?"
+        ]
+
+        for topic in topics:
+            if st.button(topic, key=f"topic_{topic}", use_container_width=True):
+                st.session_state.messages.append({"role": "me", "text": topic})
+                st.rerun()
+
+        st.divider()
+        st.caption("원하는 메시지를 누르면 대화 상대에게 전송됩니다.")
+
+    # 오른쪽: 채팅창
+    with col3:
+        st.header(f"👤 {st.session_state.selected_mentor}")
+
+        st.write("🎉 매칭에 성공했어요!")
+
+        for i, msg in enumerate(st.session_state.messages):
+            if msg["role"] == "system":
+                st.info(msg["text"])
+            elif msg["role"] == "mentor":
+                st.markdown(
+                    f"""
+                    <div class="chat-box">
+                        🤖 {msg["text"]}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+            else:
+                st.markdown(
+                    f"""
+                    <div class="chat-box">
+                        🧑 {msg["text"]}
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+        message = st.chat_input("메시지를 입력하세요.")
+
+        if message:
+            st.session_state.messages.append({"role": "me", "text": message})
+            st.rerun()
+
+
+# -------------------------
 # 페이지 실행
+# -------------------------
 if st.session_state.page == "main":
-    render_main_page()
+    main_page()
 
 elif st.session_state.page == "service":
-    render_service_page()
+    service_page()
 
 elif st.session_state.page == "matching":
-    render_matching_page()
+    matching_page()
+
+elif st.session_state.page == "result":
+    result_page()
+
+elif st.session_state.page == "chat":
+    chat_page()
